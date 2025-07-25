@@ -1,0 +1,6 @@
+[submodule "src/dh_ag95_ros2"]
+	path = src/dh_ag95_ros2
+	url = https://github.com/fanhong-li/dh_ag95_ros2.git
+[submodule "src/ros2_rm_robot"]
+	path = src/ros2_rm_robot
+	url = https://github.com/RealManRobot/ros2_rm_robot.git

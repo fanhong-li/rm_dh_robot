@@ -1,0 +1,121 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="integrated_robot">
+
+  <!-- Parameters -->
+  <xacro:arg name="use_gripper" default="true"/>
+  <xacro:arg name="use_camera" default="true"/>
+
+  <!-- Include RM75 robot description -->
+  <xacro:include filename="$(find rm_description)/urdf/rm_75.urdf"/>
+
+  <!-- Include DH AG95 gripper macro -->
+  <xacro:include filename="$(find dh_ag95_description)/urdf/dh_ag95_macro.xacro"/>
+
+  <!-- Define RealSense camera macro -->
+  <xacro:macro name="realsense_camera" params="parent *origin">
+    <joint name="camera_joint" type="fixed">
+      <xacro:insert_block name="origin"/>
+      <parent link="${parent}"/>
+      <child link="camera_link"/>
+    </joint>
+
+    <link name="camera_link">
+      <inertial>
+        <origin xyz="0.0009804 0.025556 -0.036977" rpy="0 0 0"/>
+        <mass value="0.067926"/>
+        <inertia ixx="3.7811E-05" ixy="2.2861E-18" ixz="2.2446E-19"
+                 iyy="9.4061E-05" iyz="6.1172E-06" izz="0.00012345"/>
+      </inertial>
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="package://robot_description/meshes/camera/visual/hand_camera.STL"/>
+        </geometry>
+        <material name="">
+          <color rgba="1 1 1 1"/>
+        </material>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="package://robot_description/meshes/camera/visual/hand_camera.STL"/>
+        </geometry>
+      </collision>
+    </link>
+
+    <!-- Camera optical frames -->
+    <joint name="camera_color_joint" type="fixed">
+      <origin xyz="0 0 0" rpy="-1.5708 0 -1.5708"/>
+      <parent link="camera_link"/>
+      <child link="camera_color_frame"/>
+    </joint>
+
+    <link name="camera_color_frame"/>
+
+    <joint name="camera_depth_joint" type="fixed">
+      <origin xyz="0 0 0" rpy="-1.5708 0 -1.5708"/>
+      <parent link="camera_link"/>
+      <child link="camera_depth_frame"/>
+    </joint>
+
+    <link name="camera_depth_frame"/>
+  </xacro:macro>
+
+  <!-- Instantiate gripper attached to end effector -->
+  <xacro:if value="$(arg use_gripper)">
+    <!-- Add tool_link as intermediate link -->
+    <joint name="tool_joint" type="fixed">
+      <origin xyz="0 0 0" rpy="0 0 -2.355"/>
+      <parent link="Link7"/>
+      <child link="tool_link"/>
+    </joint>
+
+    <link name="tool_link">
+      <inertial>
+        <origin xyz="-1.4586E-14 1.6875E-14 0.0086479" rpy="0 0 0"/>
+        <mass value="0.88542"/>
+        <inertia ixx="0.00049603" ixy="1.3553E-20" ixz="-6.8101E-19" 
+                 iyy="0.00049603" iyz="4.0658E-19" izz="0.00097955"/>
+      </inertial>
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="package://robot_description/meshes/tool/tool_link.STL"/>
+        </geometry>
+        <material name="">
+          <color rgba="0.77647 0.77647 0.81961 1"/>
+        </material>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="package://robot_description/meshes/tool/tool_link.STL"/>
+        </geometry>
+      </collision>
+    </link>
+
+    <!-- Use DH AG95 gripper macro -->
+    <xacro:dh_ag95_gripper 
+      prefix="" 
+      parent="tool_link">
+      <origin xyz="0 0 0.018" rpy="0 0 0.785"/>
+    </xacro:dh_ag95_gripper>
+  </xacro:if>
+
+  <!-- Instantiate camera -->
+  <xacro:if value="$(arg use_camera)">
+    <xacro:if value="$(arg use_gripper)">
+      <!-- Camera attached to tool_link -->
+      <xacro:realsense_camera parent="tool_link">
+        <origin xyz="-0.049074 0.048515 0.06645" rpy="0.066568 0 -2.3363"/>
+      </xacro:realsense_camera>
+    </xacro:if>
+    <xacro:unless value="$(arg use_gripper)">
+      <!-- Camera attached directly to Link7 -->
+      <xacro:realsense_camera parent="Link7">
+        <origin xyz="0 0.05 0.0" rpy="0 0 0"/>
+      </xacro:realsense_camera>
+    </xacro:unless>
+  </xacro:if>
+
+</robot> 
