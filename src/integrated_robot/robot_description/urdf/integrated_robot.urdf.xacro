@@ -107,7 +107,7 @@
     <xacro:if value="$(arg use_gripper)">
       <!-- Camera attached to tool_link -->
       <xacro:realsense_camera parent="tool_link">
-        <origin xyz="-0.049074 0.048515 0.06645" rpy="0.066568 0 -2.3363"/>
+        <origin xyz="-0.013298 0.067929 0.041207" rpy="-0.001305 -0.024822 -2.612690"/>
       </xacro:realsense_camera>
     </xacro:if>
     <xacro:unless value="$(arg use_gripper)">

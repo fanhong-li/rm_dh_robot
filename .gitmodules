@@ -4,3 +4,6 @@
 [submodule "src/ros2_rm_robot"]
 	path = src/ros2_rm_robot
 	url = https://github.com/RealManRobot/ros2_rm_robot.git
+[submodule "src/easy_handeye2"]
+	path = src/easy_handeye2
+	url = https://github.com/marcoesposito1988/easy_handeye2
